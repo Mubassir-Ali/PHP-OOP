@@ -1,7 +1,8 @@
 <?php
 require_once('database.php');
+require_once('database_object.php');
 
-class User{
+class User extends DatabaseObject{
     public $id;
     public $username;
     public $password;
@@ -45,6 +46,20 @@ class User{
         }else{
             return "";
         }
+    }
+
+    public static function authenticate($username="", $password=""){
+        global $database;
+        $username=$database->escape_value($username);
+        $password=$database->escape_value($password);
+
+
+        $sql="SELECT * FROM users WHERE username='{$username}' AND password='{$password}' LIMIT 1";
+
+        $result_array=self::find_by_sql($sql);
+        return !empty($result_array)? array_shift($result_array):false;
+
+
     }
 
     private static function instantiate($record){
